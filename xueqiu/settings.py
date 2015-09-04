@@ -1,11 +1,11 @@
-# Scrapy settings for dirbot project
+# Scrapy settings for xueqiu project
 
-SPIDER_MODULES = ['dirbot.spiders']
-NEWSPIDER_MODULE = 'dirbot.spiders'
-DEFAULT_ITEM_CLASS = 'dirbot.items.Website'
+SPIDER_MODULES = ['xueqiu.spiders']
+NEWSPIDER_MODULE = 'xueqiu.spiders'
+DEFAULT_ITEM_CLASS = 'xueqiu.items.Website'
 USER_AGENT = 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_10_4) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/45.0.2454.85 Safari/537.36'
 
-ITEM_PIPELINES = ['dirbot.pipelines.MongoDBPipeline', ]
+ITEM_PIPELINES = ['xueqiu.pipelines.MongoDBPipeline', ]
 
 MONGODB_SERVER = "localhost"
 MONGODB_PORT = 27017

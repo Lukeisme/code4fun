@@ -19,7 +19,8 @@ class MongoDBPipeline(object):
                 valid = False
                 raise DropItem("Missing {0}!".format(data))
         if valid:
-            self.collection.insert(dict(item))
-            log.msg("Question added to MongoDB database!",
-                    level=log.DEBUG, spider=spider)
+            if self.collection.find({'user_id':item['user_id']}).count() == 0:
+                self.collection.insert(dict(item))
+            # log.msg("Question added to MongoDB database!",
+            #         level=log.DEBUG, spider=spider)
         return item

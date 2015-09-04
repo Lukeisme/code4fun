@@ -5,6 +5,16 @@ class StackItem(Item):
     title = Field()
     url = Field()
 
-class personal(Item):
-	x = Field()
-		
+class personalCubes(Item):
+	list = Field()
+	user_id = Field()
+
+class personalQuote(Item):
+	quotes = Field()
+	user_id = Field()
+
+class VPerson(Item):
+	user_id = Field()
+	cubesList = Field()
+	quotesList = Field()
+	topStatus = Field()
