@@ -1,39 +1,26 @@
 import pymongo
-
 from scrapy.conf import settings
 from bson.code import Code
 
+
 connection = pymongo.MongoClient(settings['MONGODB_SERVER'], settings['MONGODB_PORT']) 
 db = connection[settings['MONGODB_DB']]
-collection = db[settings['MONGODB_COLLECTION']]
-mapper = Code("""
-	function () {
-		this.cubesList.forEach(function(z){
-			var value = {
-				total_gain: z.total_gain,
-				daily_gain: z.daily_gain,
-				monthly_gain: z.monthly_gain,
-				annualized_gain_rate: z.annualized_gain_rate
-			}
-			emit(z['owner_id'], value);
-		});
-	}
-	""")
-reducer = Code("""
-	function (key, values) {
-		var total = {
-			total_gain: 0,
-			daily_gain: 0,
-			monthly_gain: 0,
-			annualized_gain_rate: 0
-		};
-		for (var i = 0; i < values.length; i++) {
-			total.total_gain += values[i].total_gain/values.length;
-			total.daily_gain += values[i].daily_gain/values.length;
-			total.monthly_gain += values[i].monthly_gain/values.length;
-			total.annualized_gain_rate += values[i].annualized_gain_rate/values.length;
-		}
-		return total;
-	}
-	""")
-result = collection.map_reduce(mapper, reducer, "cubes")
+
+vpersons = db[settings['MONGODB_COLLECTION']]
+cubes = db['cubes']
+members = db['members']
+cubes.remove()
+for vperson in vpersons.find():
+	(total_gain, daily_gain, monthly_gain, annualized_gain_rate) = (0, 0, 0, 0)
+	cubes_num = len(vperson['cubesList'])
+	nickname =''
+	for cubeInfo in vperson['cubesList']:
+		total_gain += cubeInfo['total_gain'] / cubes_num
+		daily_gain += cubeInfo['daily_gain'] / cubes_num
+		monthly_gain += cubeInfo['monthly_gain'] / cubes_num
+		annualized_gain_rate += cubeInfo['annualized_gain_rate'] / cubes_num
+		nickname = cubeInfo['owner']['screen_name']
+	if not nickname:
+		member = members.find_one({'user_id':vperson['user_id']})
+		nickname = member['user_name']
+	cubes.insert_one({'user_id':vperson['user_id'],'nickname': nickname ,'total_gain':total_gain,'daily_gain':daily_gain,'monthly_gain':monthly_gain,'annualized_gain_rate':annualized_gain_rate});

@@ -18,3 +18,7 @@ class VPerson(Item):
 	cubesList = Field()
 	quotesList = Field()
 	topStatus = Field()
+
+class Weibo(Item):
+	user_id = Field()
+	weibosList = Field()
