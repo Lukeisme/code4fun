@@ -3,7 +3,7 @@ from scrapy.selector import Selector
 from scrapy.http import FormRequest
 from scrapy.conf import settings
 
-from xueqiu.items import VPerson, Members
+from xueqiu.items import VPerson, Members, Weibos
 
 import json
 import re
@@ -175,3 +175,64 @@ class members(Spider):
                          'page': str(index),
                          '_': str(int(time.time()))
                          })
+
+class weibos(Spider):
+    name = "weibos"
+    allowed_domains = ["xueqiu.com"]
+    
+    connection = pymongo.MongoClient(settings['MONGODB_SERVER'], settings['MONGODB_PORT']) 
+    db = connection[settings['MONGODB_DB']]
+    vpersonCollection = db[settings['MONGODB_COLLECTION']]
+    vPersons =  vpersonCollection.find()
+    
+    start_urls = []
+    weibosHash = {}
+
+    for vPerson in vPersons:
+        symbols = []
+        uid = str(vPerson['user_id'])
+        for symbol in vPerson['topStatus']:
+            symbols.append(symbol['symbol'])
+        start_urls.append("http://xueqiu.com/"+vPerson['user_id'])
+        weibosHash[uid] = Weibos()
+        weibosHash[uid]['user_id'] = uid
+        weibosHash[uid]['symbols'] = symbols
+        weibosHash[uid]['weibosList'] = []
+
+
+    print weibosHash
+    def parse(self, response):
+        """
+        The lines below is a spider contract. For more info see:
+        http://doc.scrapy.org/en/latest/topics/contracts.html
+
+        @url http://xueqiu.com
+        @scrapes name
+        """
+        
+        sel = Selector(response)
+        user_id = sel.css('h2 .setRemark::attr(data-user-id)').extract()[0]
+        # get weibo
+        for symbol in self.weibosHash[str(user_id)]['symbols']:
+            yield FormRequest('http://xueqiu.com/statuses/search.json',
+             callback=self.stocksWeibo,
+             method='get',
+             formdata={
+             'uid': user_id, 
+             'symbol': symbol,
+             'page': '1',
+             'ex': '1',
+             'sort': 'time',
+             'comment': '0',
+             '_': str(int(time.time()))
+             })
+
+    def stocksWeibo(self, response):
+        uid = str(re.search(r'uid=(\d+)',
+            response.request.url).group(1))
+        symbol = str(re.search(r'symbol=(.+?)&',
+            response.request.url).group(1))
+        print symbol
+        self.weibosHash[uid]['weibosList'].append({'symbol':symbol, 'list':json.loads(response.body)['list']})
+        if len(self.weibosHash[uid]['symbols']) <= len(self.weibosHash[uid]['weibosList']):
+            yield self.weibosHash[uid]

@@ -3,7 +3,8 @@
 SPIDER_MODULES = ['xueqiu.spiders']
 NEWSPIDER_MODULE = 'xueqiu.spiders'
 DEFAULT_ITEM_CLASS = 'xueqiu.items.Website'
-USER_AGENT = 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_10_4) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/45.0.2454.85 Safari/537.36'
+USER_AGENT = 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_10_4) (KHTML, like Gecko) Chrome/45.0.2454.85 Safari/537.36'
+DOWNLOAD_DELAY = 2
 
 ITEM_PIPELINES = ['xueqiu.pipelines.MongoDBPipeline']
 
@@ -13,3 +14,4 @@ MONGODB_DB = "xueqiu"
 MONGODB_COLLECTION = "vperson"
 
 MONGODB_COLLECTION_MEMBERS = "members"
+MONGODB_COLLECTION_WEIBOS = "weibos"
