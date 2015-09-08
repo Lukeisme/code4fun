@@ -11,8 +11,6 @@ class MongoDBPipeline(object):
         connection = pymongo.MongoClient(settings['MONGODB_SERVER'], settings['MONGODB_PORT']) 
         db = connection[settings['MONGODB_DB']]
         self.collection = db[settings['MONGODB_COLLECTION_WEIBOS']]
-        # self.collection = db[settings['MONGODB_COLLECTION']]
-        # self.collection = db[settings['MONGODB_COLLECTION_MEMBERS']]
 
     def process_item(self, item, spider):
         valid = True
