@@ -1,1 +1,4 @@
 *.pyc
+.idea/
+show/bower_components
+show/node_modules
