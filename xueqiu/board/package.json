@@ -1,0 +1,17 @@
+{
+  "name": "board",
+  "version": "1.0.0",
+  "description": "code4fun",
+  "main": "server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "express": "4.13.3",
+    "mongodb": "2.0.42",
+    "swig": "1.4.2"
+  },
+  "author": "",
+  "license": "ISC"
+}

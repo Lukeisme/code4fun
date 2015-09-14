@@ -183,7 +183,7 @@ class weibos(Spider):
     connection = pymongo.MongoClient(settings['MONGODB_SERVER'], settings['MONGODB_PORT']) 
     db = connection[settings['MONGODB_DB']]
     vpersonCollection = db[settings['MONGODB_COLLECTION']]
-    vPersons =  vpersonCollection.find()
+    vPersons =  vpersonCollection.find().skip(0)
     
     start_urls = []
     weibosHash = {}
@@ -209,7 +209,7 @@ class weibos(Spider):
         @url http://xueqiu.com
         @scrapes name
         """
-        
+        print response
         sel = Selector(response)
         user_id = sel.css('h2 .setRemark::attr(data-user-id)').extract()[0]
         # get weibo
